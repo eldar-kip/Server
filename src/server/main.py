@@ -1,11 +1,11 @@
 from fastapi import FastAPI
-from src.server.core.database import engine, Base
-from src.server.models.user import User
 
-Base.metadata.create_all(bind=engine)
-app = FastAPI()
+app = FastAPI(
+    title="Tire Catalog API",
+    description="API для управления номенклатурой автомобильных шин",
+    version="1.0.0"
+)
 
-
-@app.get("/")
+@app.get("/", tags=["Главная"])
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Добро пожаловать в API каталога шин!"}
