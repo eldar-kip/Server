@@ -11,10 +11,15 @@ from .references import (
     
 )
 from .tire import Tire, tire_technologies
+
 from .procurement import (
     ProcurementSession, 
     RawOfferItem, 
     TaskStatusEnum)
+
+from .user import (
+    User, 
+    RoleEnum)
 
 __all__ = [
     "Base",
@@ -31,4 +36,6 @@ __all__ = [
     "ProcurementSession",
     "RawOfferItem",
     "TaskStatusEnum",
+    "User",
+    "RoleEnum",
 ]

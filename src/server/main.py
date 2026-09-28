@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-
+from src.server.api.auth import router as auth_router
 app = FastAPI(
     title="Tire Catalog API",
     description="API для управления номенклатурой автомобильных шин",
@@ -9,3 +9,5 @@ app = FastAPI(
 @app.get("/", tags=["Главная"])
 async def root():
     return {"message": "Добро пожаловать в API каталога шин!"}
+
+app.include_router(auth_router)
