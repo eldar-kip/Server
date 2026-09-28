@@ -11,6 +11,7 @@ if TYPE_CHECKING:
         SpeedIndex,
         Seasonality,
         TreadPattern,
+        Pattern
     )
 
 # Промежуточная таблица для связи "Шины <-> Технологии"
@@ -38,7 +39,8 @@ class Tire(Base):
     speed_index_code: Mapped[Optional[str]] = mapped_column(ForeignKey("speed_indices.code"))
     seasonality_id: Mapped[Optional[int]] = mapped_column(ForeignKey("seasonalities.id"))
     tread_pattern_id: Mapped[Optional[int]] = mapped_column(ForeignKey("tread_patterns.id"))
-    
+    pattern_id: Mapped[Optional[int]] = mapped_column(ForeignKey("patterns.id"))    
+
     # Связи (Relationships) — все зависимости указаны СТРОКАМИ
     # Связи (Relationships)
     technologies: Mapped[list["Technology"]] = relationship(secondary=tire_technologies)
@@ -47,3 +49,4 @@ class Tire(Base):
     speed_index: Mapped["SpeedIndex | None"] = relationship()
     seasonality: Mapped["Seasonality | None"] = relationship()
     tread_pattern: Mapped["TreadPattern | None"] = relationship()
+    pattern: Mapped["Pattern | None"] = relationship(back_populates="tires")

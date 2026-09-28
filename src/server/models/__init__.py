@@ -2,6 +2,8 @@ from .base import Base
 from .references import (
     ConstructionType,
     LoadIndex,
+    Manufacturer,
+    Pattern,
     Seasonality,
     SpeedIndex,
     Technology,
@@ -9,11 +11,12 @@ from .references import (
 )
 from .tire import Tire, tire_technologies
 
-# для успокоения души
 __all__ = [
     "Base",
     "ConstructionType",
     "LoadIndex",
+    "Manufacturer",
+    "Pattern",
     "Seasonality",
     "SpeedIndex",
     "Technology",
