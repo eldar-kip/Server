@@ -8,8 +8,13 @@ from .references import (
     SpeedIndex,
     Technology,
     TreadPattern,
+    
 )
 from .tire import Tire, tire_technologies
+from .procurement import (
+    ProcurementSession, 
+    RawOfferItem, 
+    TaskStatusEnum)
 
 __all__ = [
     "Base",
@@ -23,4 +28,7 @@ __all__ = [
     "TreadPattern",
     "Tire",
     "tire_technologies",
+    "ProcurementSession",
+    "RawOfferItem",
+    "TaskStatusEnum",
 ]
