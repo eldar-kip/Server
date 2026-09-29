@@ -36,3 +36,13 @@ class ProcurementSessionResponse(BaseModel):
 
     class Config:
         from_attributes = True
+# Схема для возврата статуса обработки с прогрессом (Пункт 5)
+class ProcurementStatusResponse(BaseModel):
+    id: int
+    status: TaskStatus
+    total_items: int
+    matched_items: int
+    progress_percent: float = Field(..., ge=0, le=100, description="Процент выполнения сопоставления")
+
+    class Config:
+        from_attributes = True
