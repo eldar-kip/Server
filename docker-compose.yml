@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  db:
+    image: ankane/pgvector:v0.5.1
+    container_name: taires_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: taires_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  server:
+    build: .
+    container_name: taires_server
+    ports:
+      - "8000:8000"
+    environment:
+      # ВАЖНО: Вместо localhost теперь указываем имя сервиса БД — db
+      - DATABASE_URL=postgresql+asyncpg://admin:password@db:5432/taires_db
+    depends_on:
+      - db
+    volumes:
+      # Прокидываем код внутрь для удобной разработки (hot-reload)
+      - ./src:/app/src
+
+volumes:
+  postgres_data:

@@ -1,14 +1,17 @@
+import os
 from collections.abc import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 
-SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./db/app.db"
+SQLALCHEMY_DATABASE_URL = os.getenv(
+    "DATABASE_URL", 
+    "postgresql+asyncpg://admin:password@localhost:5432/taires_db"
+)
 
 engine = create_async_engine(
     SQLALCHEMY_DATABASE_URL, 
-    connect_args={"check_same_thread": False}
+    echo=False
 )
-
 AsyncSessionLocal = async_sessionmaker(
     class_=AsyncSession,
     expire_on_commit=False,
