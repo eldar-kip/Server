@@ -21,6 +21,20 @@ services:
     volumes:
       - redis_data:/data
 
+  server:
+    build: .
+    container_name: taires_server
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://admin:password@db:5432/taires_db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./src:/app/src
+
   celery_worker:
     build: .
     container_name: taires_celery_worker
