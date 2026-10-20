@@ -6,21 +6,19 @@ from sqlalchemy.orm import selectinload
 from src.server.core.database import get_db
 from src.server.models.procurement import ProcurementSession, RawOfferItem, TaskStatusEnum
 from src.server.services.file_parser import FileParserService
+from src.server.tasks.matching_tasks import process_procurement_session
 
 router = APIRouter(prefix="/api/v1/procurement", tags=["Закупочные сессии"])
+
 
 @router.post("/upload")
 async def upload_procurement_file(
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db)
 ):
-    """ 
-    Прием UploadFile, парсинг строк и сохранение сессии в БД.
-    """
-    # Вызов парсера файлов (подзадача 2 и 5)
+    """Прием UploadFile, парсинг строк и сохранение сессии в БД."""
     parsed_items_schemas = await FileParserService.parse_file(file)
 
-    # Создание родительской ProcurementSession
     session_title = f"Сессия из файла: {file.filename}"
     new_session = ProcurementSession(
         title=session_title,
@@ -32,7 +30,6 @@ async def upload_procurement_file(
     await db.commit()
     await db.refresh(new_session)
 
-    # Сохранение распарсенных товаров (RawOfferItem)
     raw_items = [
         RawOfferItem(
             session_id=new_session.id,
@@ -46,21 +43,23 @@ async def upload_procurement_file(
     db.add_all(raw_items)
     await db.commit()
 
+    process_procurement_session.delay(new_session.id)
+
     return {
         "message": "Файл успешно загружен и распарсен", 
         "session_id": new_session.id, 
         "total_items": len(raw_items)
     }
 
+
 @router.get("/{session_id}")
 async def get_session_details(session_id: int, db: AsyncSession = Depends(get_db)):
-    """
-    Получение статуса и списка распарсенных товаров конкретной сессии (подзадача 3).
-    """
-    # Используем selectinload для асинхронной подгрузки связанных сырых позиций
-    stmt = select(ProcurementSession).where(
-        ProcurementSession.id == session_id
-    ).options(selectinload(ProcurementSession.raw_offer_items))
+    """Получение статуса и списка распарсенных товаров конкретной сессии."""
+    stmt = (
+        select(ProcurementSession)
+        .where(ProcurementSession.id == session_id)
+        .options(selectinload(ProcurementSession.raw_offer_items))
+    )
     
     result = await db.execute(stmt)
     session = result.scalars().first()
@@ -70,16 +69,20 @@ async def get_session_details(session_id: int, db: AsyncSession = Depends(get_db
 
     return session
 
+
 @router.get("/sessions/")
 async def list_sessions(
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
     db: AsyncSession = Depends(get_db)
 ):
-    """
-    Пагинированный список всех сессий закупщика (подзадача 4).
-    """
-    stmt = select(ProcurementSession).offset(skip).limit(limit).order_by(ProcurementSession.created_at.desc())
+    """Пагинированный список всех сессий закупщика."""
+    stmt = (
+        select(ProcurementSession)
+        .offset(skip)
+        .limit(limit)
+        .order_by(ProcurementSession.created_at.desc())
+    )
     result = await db.execute(stmt)
     sessions = result.scalars().all()
 

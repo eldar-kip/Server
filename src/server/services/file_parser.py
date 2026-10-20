@@ -6,10 +6,10 @@ from src.server.schemas.procurement import RawOfferItemSchema
 class FileParserService:
     # Ключевые слова для автоопределения колонок
     COLUMN_MAPPING = {
-        "raw_name": ["наименование", "название", "товар", "номенклатура", "описание"],
-        "price": ["цена", "стоимость", "прайс"],
-        "quantity": ["количество", "кол-во", "остаток", "шт"],
-        "supplier_article": ["артикул", "код", "sku"]
+        "raw_name": ["наименование", "название", "товар", "номенклатура", "описание", "raw_name", "name", "title"],
+        "price": ["цена", "стоимость", "прайс", "price", "cost"],
+        "quantity": ["количество", "кол-во", "остаток", "шт", "quantity", "qty", "count"],
+        "supplier_article": ["артикул", "код", "sku", "article", "supplier_article"]
     }
 
     @staticmethod

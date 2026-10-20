@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   db:
-    image: ankane/pgvector:v0.5.1
+    image: pgvector/pgvector:pg15
     container_name: taires_postgres
     environment:
       POSTGRES_USER: admin
@@ -13,19 +13,27 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  server:
-    build: .
-    container_name: taires_server
+  redis:
+    image: redis:7-alpine
+    container_name: taires_redis
     ports:
-      - "8000:8000"
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  celery_worker:
+    build: .
+    container_name: taires_celery_worker
+    command: uv run celery -A src.server.core.celery_app.celery_app worker --loglevel=info
     environment:
-      # ВАЖНО: Вместо localhost теперь указываем имя сервиса БД — db
       - DATABASE_URL=postgresql+asyncpg://admin:password@db:5432/taires_db
+      - REDIS_URL=redis://redis:6379/0
     depends_on:
       - db
+      - redis
     volumes:
-      # Прокидываем код внутрь для удобной разработки (hot-reload)
       - ./src:/app/src
 
 volumes:
   postgres_data:
+  redis_data:

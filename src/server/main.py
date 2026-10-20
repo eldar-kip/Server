@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from src.server.api.auth import router as auth_router
 from src.server.api.v1.procurement import router as procurement_router
+from src.server.api.v1.websocket import router as ws_router
+
+
 app = FastAPI(
     title="Tire Catalog API",
     description="API для управления номенклатурой автомобильных шин",
@@ -13,3 +16,4 @@ async def root():
 
 app.include_router(auth_router)
 app.include_router(procurement_router)
+app.include_router(ws_router)
