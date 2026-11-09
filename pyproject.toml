@@ -1,36 +1,60 @@
 [project]
 name = "server"
 version = "0.1.0"
-description = "Add your description here"
+description = "Backend-сервис автоматизации закупок шин tAIres (сопоставление прайс-листов, оптимизация сплита, экспорт в 1С/ERP)"
 readme = "README.md"
 authors = [
     { name = "eldar-kip", email = "odzha.eldar.i.3.24@gmail.com" }
 ]
 requires-python = ">=3.14"
 dependencies = [
-    "aiosqlite>=0.22.1",
     "alembic>=1.20.0",
     "asyncpg>=0.31.0",
+    "boto3>=1.36.0",
     "celery>=5.6.3",
     "fastapi[standard]>=0.141.1",
+    "httpx>=0.28.0",
     "openpyxl>=3.1.5",
     "pandas>=3.0.6",
-    "passlib[bcrypt]>=1.7.4",
     "pgvector>=0.5.0",
     "pwdlib[argon2]>=0.3.1",
+    "pydantic-settings>=2.8.0",
     "pyjwt>=2.15.1",
-    "pytest-asyncio>=1.4.0",
     "python-multipart>=0.0.32",
     "redis>=8.1.0",
+    "scipy>=1.15.0",
+    "sentence-transformers>=3.4.0",
     "sqlalchemy>=2.0.54",
+    "torch>=2.6.0",
 ]
+
+[dependency-groups]
+dev = [
+    "aiosqlite>=0.22.1",
+    "httpx>=0.28.0",
+    "pytest>=9.0.0",
+    "pytest-asyncio>=1.4.0",
+    "websockets>=14.0",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu", marker = "sys_platform == 'linux'" },
+]
+
 [tool.fastapi]
 entrypoint = "src.server.main:app"
 
 [build-system]
-requires = ["uv_build>=0.12.17,<0.13.0"]
+requires = ["uv_build>=0.12.17,<0.14.0"]
 build-backend = "uv_build"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
 asyncio_mode = "auto"
+testpaths = ["src/test"]
